@@ -369,3 +369,70 @@ Complexity of implementation and maintenance
 Potential for false positives
 Need for continuous training and updating
 Resource requirements for real-time analysis
+
+<<================== GeNML algorithm ==================>>
+
+GENML is a hybrid metaheuristic algorithm that combines PSO with multiple local search techniques to enhance its ability to find global optima in complex optimization problems.
+Reconstruction of the original DNA sequence from the compressed file is possible without any data loss.
+
+Key Steps:
+1.	Initialization:
+o	Create a population of particles, each representing a potential solution in the search space.
+o	Assign random positions and velocities to the particles.
+o	Define the objective function to be optimized.
+2.	Evaluation:
+o	Calculate the fitness value of each particle.
+3.	Identify Best Solutions:
+o	Determine the personal best position (pbest) of each particle, representing its best fitness value thus far.
+o	Determine the global best position (gbest), representing the best fitness value achieved among all particles.
+4.	Velocity Update:
+o	Update the velocity of each particle using the following equation: Velocity Update Equation GENML PSO: https://arxiv.org/abs/2004.05311
+	Where:
+	w: inertia weight
+	c1, c2: acceleration coefficients
+	r1, r2: random numbers between 0 and 1
+5.	Position Update:
+o	Update the position of each particle using its updated velocity: Position Update Equation GENML PSO: https://ieeexplore.ieee.org/document/10090725/
+6.	Multiple Local Searches:
+o	Apply multiple local search techniques to explore promising regions around the particles' positions.
+7.	Iteration:
+o	Repeat steps 2-6 until a stopping criterion is met (e.g., maximum iterations, desired fitness level).
+Advantages of GENML:
+•	Enhances PSO's ability to escape local optima
+•	Improves convergence speed
+•	Provides flexibility in handling different optimization problems
+
+<<============ POMA algorithm  ================>>
+
+POMA (Population Migration Algorithm) is a metaheuristic optimization algorithm inspired by the migration behaviour of species in nature. It shares similarities with PSO, but introduces distinct features to enhance exploration and exploitation capabilities.
+Key Concepts in POMA:
+•	Population: A set of candidate solutions (particles) representing potential optima.
+•	Migration Groups: The population is divided into several migration groups, each exploring different regions of the search space.
+•	Leaders: The best particle in each group, guiding the movement of others within the group.
+•	Migration Strategies: Rules governing how particles move between groups, promoting information exchange and diversity.
+POMA Algorithm Steps:
+1.	Initialization:
+o	Define problem parameters and constraints.
+o	Randomly initialize a population of particles.
+o	Divide particles into migration groups.
+2.	Fitness Evaluation:
+o	Evaluate the fitness (objective function value) of each particle.
+o	Identify the leader of each group.
+3.	Migration:
+o	Apply migration strategies to move particles between groups, based on fitness and distance considerations.
+o	Common strategies include:
+	Random migration: Randomly select particles for movement.
+	Best-to-worst migration: Move particles from better to worse groups.
+	Worst-to-best migration: Move particles from worse to better groups.
+4.	Position Update:
+o	Update the position of each particle within its group, influenced by:
+	Its own best position (cognition).
+	The group leader's position (social learning).
+	Randomness (exploration).
+5.	Repeat:
+o	Iterate steps 2-4 until a stopping criterion is met (e.g., maximum iterations, acceptable solution found).
+Visual Representation:
+POMA's Advantages in PSO:
+•	Enhanced Exploration: Migration strategies promote diversity and prevent premature convergence.
+•	Improved Exploitation: Focused search within groups while still benefiting from information exchange.
+•	Adaptability: Can be applied to various optimization problems with different characteristics.
