@@ -1,0 +1,106 @@
+PSO Project
+
+Biocompress Algorithm:
+
+Here's a comprehensive explanation of Biocompress, an algorithm designed for compressing DNA sequences:
+Key Features:
+•	Lempel-Ziv-based: It builds upon the Lempel-Ziv (LZ) family of compression techniques, specifically LZ77.
+•	Tailored for DNA: It leverages the unique characteristics of DNA sequences, such as repetitive patterns and palindromes, to achieve enhanced compression.
+•	Lossless compression: It ensures the original DNA sequence can be perfectly reconstructed from the compressed data.
+Algorithm Steps:
+1.	Initialization:
+o	Create a dictionary to store previously encountered substrings.
+o	Initialize a buffer to hold the current sequence being processed.
+2.	Scanning the Sequence:
+o	Iterate through the DNA sequence, one symbol (base) at a time.
+o	For each symbol: 
+	Check if the buffer plus the new symbol form a substring already present in the dictionary: 
+	If so, encode the substring by its index in the dictionary and clear the buffer.
+	Otherwise, add the new symbol to the buffer.
+3.	Encoding Substrings:
+o	Substrings found in the dictionary are encoded using two values: 
+	Length: The number of symbols in the substring.
+	Distance: The offset from the current position in the sequence to the previous occurrence of the substring.
+4.	Handling Palindromes:
+o	Biocompress also efficiently encodes palindromes (sequences that read the same backward as forward).
+o	It detects palindromes and represents them using their length and offset.
+Additional Features:
+•	Arithmetic Coding: Biocompress-2, an enhanced version, incorporates *order-2 arithmetic coding* for further compression of non-repetitive regions.
+Benefits:
+•	Reduced storage requirements: Compresses DNA sequences significantly, saving valuable storage space.
+•	Faster transmission: Smaller compressed files can be transmitted more efficiently over networks.
+•	Improved data analysis: Compressed sequences can still be analyzed using specialized tools, enabling efficient research.
+Applications:
+•	Bioinformatics research, where handling large-scale DNA sequences is common.
+•	DNA sequencing databases, where compression reduces storage costs and facilitates data sharing.
+•	Personalized medicine, where DNA analysis is increasingly used for diagnosis and treatment.
+
+
+** order-2 Arithmetic coding **
+
+Here's an explanation of order-2 arithmetic coding:
+General Context of Arithmetic Coding:
+•	It's a lossless data compression technique that surpasses typical methods like Huffman coding in terms of compression efficiency.
+•	It maps an entire message to a single number (a fraction between 0 and 1) rather than encoding symbols individually.
+•	This enables it to adapt to the actual probabilities of symbols within the message, leading to better compression.
+Key Concept of Order:
+•	The "order" in arithmetic coding refers to the number of previous symbols that influence the probability of the current symbol being encoded.
+•	Higher-order models capture more complex dependencies within the data, potentially improving compression.
+Order-2 Arithmetic Coding:
+•	It's a type of arithmetic coding that uses a context of length 2, meaning the probability of the current symbol depends on the two symbols that precede it.
+•	It involves: 
+o	A model that estimates the probability of each symbol based on the two previous symbols.
+o	An encoding process that maps the message to a fraction within a narrowing interval, iteratively adjusting the interval based on the probabilities of the symbols.
+o	A decoding process that reconstructs the original message from the encoded fraction.
+Example:
+•	Consider encoding the string "ABAAB" with order-2 arithmetic coding: 
+o	The probability of "B" after "AA" might be different from the probability of "B" after "AB".
+o	The model captures these contextual dependencies.
+Advantages:
+•	Often achieves better compression than order-0 or order-1 arithmetic coding, especially for data with strong short-range dependencies.
+Trade-offs:
+•	Increased model complexity and computational cost.
+•	Requires accurate probability estimation for the symbol pairs.
+Practical Considerations:
+•	Order-2 arithmetic coding is used in various compression algorithms, including those for text, images, and audio.
+•	It's often combined with other techniques like context modeling and adaptive probability estimation to further enhance compression performance.
+
+
+
+LZ Encoding:
+LZ encoding, often referred to as LZ77 encoding, is a lossless data compression technique that identifies and replaces recurring patterns with references to their earlier occurrences. It's named after its inventors, Abraham Lempel and Jacob Ziv, who published it in 1977.
+Here's a simplified explanation of how LZ encoding works:
+1.	Scanning and Matching:
+o	The encoder scans the input data sequentially.
+o	For each new symbol (character or byte), it searches for the longest matching sequence that has already appeared in the data.
+o	This search is typically performed within a limited search buffer, which stores a portion of the recently processed data.
+2.	Generating Phrases:
+o	If a match is found, the encoder creates a phrase that represents the repetition: 
+	It records a pointer to the earlier occurrence of the sequence in the data.
+	It also records the length of the matching sequence.
+	For any unmatched symbols, it simply records them as literals.
+3.	Outputting Phrases:
+o	The encoder outputs a series of phrases, each containing either a pointer-length pair for a matching sequence or a literal symbol.
+Key Advantages:
+•	Lossless: LZ encoding preserves all original data without any information loss.
+•	Effective for repetitive data: It excels in compressing text, code, and other data with recurring patterns.
+•	Adaptive: It can adjust to different data types and distributions.
+•	Relatively fast: It offers a good balance between compression efficiency and speed.
+Example:
+
+Here's a visualization of how LZ encoding might compress the text "ABAABABACABA":
+
+https://cdncontribute.geeksforgeeks.org/wp-content/uploads/lempel%E2%80%93ziv%E2%80%93welch-compression-technique.png
+
+Common Variations:
+•	LZ78: Another variant by Lempel and Ziv, using a dictionary-based approach.
+•	LZW: Lempel-Ziv-Welch, a popular variant often used in image compression (GIF).
+•	LZMA: Lempel-Ziv-Markov chain algorithm, offering high compression ratios.
+Applications:
+•	File compression formats (ZIP, RAR, 7z, PNG, etc.)
+•	Data transmission protocols (modems, networking)
+•	Text compression in databases and search engines
+•	Image compression (GIF)
+•	DNA sequence compression
+•	Many other compression-related tasks
+
