@@ -436,3 +436,55 @@ POMA's Advantages in PSO:
 •	Enhanced Exploration: Migration strategies promote diversity and prevent premature convergence.
 •	Improved Exploitation: Focused search within groups while still benefiting from information exchange.
 •	Adaptability: Can be applied to various optimization problems with different characteristics.
+
+
+
+******************** COMRAD *****************
+
+COMRAD is used to compress highly redundant sequences. The algorithm uses corpus-wide codebook to store the repetitive substrings from the input sequence. The repetitive substrings are then encoded into short words to gain compression. 
+
+
+******************* ScPSO ***************
+
+
+Here's a comprehensive explanation of the Scout Particle Swarm Optimization (ScPSO) algorithm:
+Key Concepts:
+•	Inspiration: It draws inspiration from both Particle Swarm Optimization (PSO) and the scout bee behavior in honey bee colonies.
+•	Purpose: It's designed to enhance the exploration and exploitation capabilities of PSO, aiming for more robust and efficient global optimization.
+Key Features:
+1.	Scout Bee Phase:
+o	Periodically, particles with poor fitness become scouts.
+o	Scouts abandon their current positions and explore new, random areas of the search space.
+o	This promotes diversity and helps prevent premature convergence.
+2.	Swarming Phase:
+o	Particles update their positions based on their own best experiences (pbest) and the global best experience (gbest), as in standard PSO.
+o	However, ScPSO employs a modified velocity update equation to balance exploration and exploitation.
+Algorithm Outline:
+1.	Initialization:
+o	Define problem parameters and constraints.
+o	Initialize a population of particles with random positions and velocities.
+o	Evaluate the fitness of each particle.
+2.	Iterative Process:
+o	Scout Bee Phase: 
+	Identify particles with poor fitness as scouts.
+	Replace their positions with random new positions within the search space.
+o	Swarming Phase: 
+	Update velocities and positions of particles using the modified PSO equation.
+	Evaluate the fitness of the new particles.
+	Update pbest and gbest values.
+3.	Termination:
+o	Repeat the process until a stopping criterion is met (e.g., maximum iterations, desired fitness level).
+Advantages:
+•	Improved Exploration: The scout bee phase effectively prevents premature convergence and enhances exploration of the search space.
+•	Balanced Exploration-Exploitation: The modified velocity update equation balances the need to explore new areas with the need to exploit promising regions.
+•	Robustness: ScPSO has been shown to be more robust to local optima than standard PSO, especially for complex optimization problems.
+Applications:
+•	Continuous optimization problems in various fields, including: 
+o	Engineering design
+o	Machine learning
+o	Image processing
+o	Power system optimization
+o	Economic scheduling
+o	And more
+
+
