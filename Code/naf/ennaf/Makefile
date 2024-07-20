@@ -18,7 +18,7 @@ SOURCES = $(wildcard src/*)
 default: $(TARGET)
 
 $(TARGET): $(SOURCES)
-	$(CC) $(CFLAGS) -o $@ src/ennaf.c $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ src/ennaf.c src/cpuUsage.c $(LDFLAGS)
 
 all: default
 

@@ -122,26 +122,22 @@ static bool success = false;
 #include "compressor.c"
 #include "encoders.c"
 #include "process.c"
-#include <stdint.h>
-#include <bits/pthreadtypes.h>
+
 #include <pthread.h>
-
-
-#define FREE(p) \
-do { if ((p) != NULL) { free(p); (p) = NULL; } } while (0)
-
+#include <stdbool.h>
 
 ///////////////////////////////////////////////////////////
-//////////////////// RAM USAGE ////////////////////////////
+/////////////////////// RAM USAGE /////////////////////////
 
 volatile bool keep_running = true;
 
-uint64_t mem_total, mem_free_beg, mem_free_end, mem_used;
-uint64_t cpu_avg, ram_avg, ram_total;
+unsigned long mem_total, mem_free_beg, mem_free_end;
+int  mem_used;
+int cpu_avg, ram_avg, ram_total;
 
 extern void* get_cpu_usage(void* arg);
 
-void get_memory_usage(uint64_t* total, uint64_t* free) {
+void get_memory_usage(unsigned long* total, unsigned long* free) {
     FILE* file = fopen("/proc/meminfo", "r");
     if (!file) {
         perror("fopen");
@@ -150,8 +146,8 @@ void get_memory_usage(uint64_t* total, uint64_t* free) {
 
     char buffer[256];
     while (fgets(buffer, sizeof(buffer), file)) {
-        if (sscanf(buffer, "MemTotal: %ld kB", total) == 1 ||
-            sscanf(buffer, "MemFree: %ld kB", free) == 1) {
+        if (sscanf(buffer, "MemTotal: %lu kB", total) == 1 ||
+            sscanf(buffer, "MemFree: %lu kB", free) == 1) {
             // Do nothing, just parsing
         }
     }
@@ -161,6 +157,10 @@ void get_memory_usage(uint64_t* total, uint64_t* free) {
 
 //////////////////////////////////////////////////////////
 
+
+
+#define FREE(p) \
+do { if ((p) != NULL) { free(p); (p) = NULL; } } while (0)
 
 
 static void done(void)
@@ -470,24 +470,21 @@ int main(int argc, char **argv)
     atexit(done);
     init_encoders();
 
-    printf("\nDudh na khele hobe na bhalo chele 1");
+    ////////////////////////////////////////////////
+    /////////// CPU AND MEM USAGE //////////////////
 
+    pthread_t monitor_thread;
+    int pid = getpid();
 
-  ////////////////////////////////////////////////
-  /////////// CPU AND MEM USAGE //////////////////
+    // Create a thread to monitor CPU usage
+    pthread_create(&monitor_thread, NULL, get_cpu_usage, &pid);
 
-  pthread_t monitor_thread;
-  uint64_t pid = (uint64_t)getpid();
+    //////////////////////////////////////////
+    /////////   MEM USAGE CALCULATE //////////
 
-  // Create a thread to monitor CPU usage
-  pthread_create(&monitor_thread, NULL, get_cpu_usage, &pid);
+    get_memory_usage(&mem_total, &mem_free_beg);
 
-  //////////////////////////////////////////
-  /////////   MEM USAGE CALCULATE //////////
-
-  get_memory_usage(&mem_total, &mem_free_beg);
-
-  /////////////////////////////////////////
+    /////////////////////////////////////////
 
     parse_command_line(argc, argv);
     if (in_file_path == NULL && isatty(fileno(stdin)))
@@ -650,8 +647,6 @@ int main(int argc, char **argv)
     if (verbose) { msg("Processed %llu sequences\n", n_sequences); }
     success = true;
 
-    printf("\nDudh na khele hobe na bhalo chele 2");
-
     ////////////////////////////////////////////////
     /////////// CPU AND MEM USAGE //////////////////
     keep_running = false;
@@ -663,15 +658,11 @@ int main(int argc, char **argv)
     get_memory_usage(&mem_total, &mem_free_end);
     if(mem_free_beg > mem_free_end)
         mem_used = mem_free_beg - mem_free_end;
+    ram_total = (int)(mem_total/1000);
     if(ram_avg == 0) ram_avg = 1;
-    ram_total = (uint64_t)(mem_total / 1000);
-    // fprintf(stdout,"Memory used: %"PRIu64" kb out of %"PRIu64" kb \n", mem_used, mem_total);
-    // fprintf(stdout,"CPU usage: %"PRIu64" %%\n", cpu_avg);
-    // fprintf(stdout,"RAM usage: %"PRIu64" mb out of %"PRIu64" mb\n", ram_avg*ram_total/100, ram_total);
-
-    printf("Memory used: %lu kb out of %lu  kb \n", mem_used, mem_total);
-    printf("CPU usage: %lu %%\n", cpu_avg);
-    printf("RAM usage: %lu mb out of %lu mb\n", (ram_avg * ram_total) / 100, ram_total);
+    fprintf(stdout,"Memory used: %d kb out of %d kb \n", mem_used, (int)mem_total);
+    fprintf(stdout,"CPU usage: %d %%\n", cpu_avg);
+    fprintf(stdout,"RAM usage: %d mb out of %d mb\n", ram_avg*ram_total/100, ram_total);
 
     ////////////////////////////////////////////////
 

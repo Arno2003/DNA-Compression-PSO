@@ -147,6 +147,40 @@ static bool success = false;
 #include "output-sequences.c"
 #include "output-fastq.c"
 
+#include <pthread.h>
+#include <stdbool.h>
+
+///////////////////////////////////////////////////////////
+/////////////////////// RAM USAGE /////////////////////////
+
+volatile bool keep_running = true;
+
+unsigned long mem_total, mem_free_beg, mem_free_end;
+int  mem_used;
+int cpu_avg, ram_avg, ram_total;
+
+extern void* get_cpu_usage(void* arg);
+
+void get_memory_usage(unsigned long* total, unsigned long* free) {
+    FILE* file = fopen("/proc/meminfo", "r");
+    if (!file) {
+        perror("fopen");
+        exit(EXIT_FAILURE);
+    }
+
+    char buffer[256];
+    while (fgets(buffer, sizeof(buffer), file)) {
+        if (sscanf(buffer, "MemTotal: %lu kB", total) == 1 ||
+            sscanf(buffer, "MemFree: %lu kB", free) == 1) {
+            // Do nothing, just parsing
+        }
+    }
+
+    fclose(file);
+}
+
+//////////////////////////////////////////////////////////
+
 
 #define FREE(p) \
 do { if ((p) != NULL) { free(p); (p) = NULL; } } while (0)
@@ -358,6 +392,23 @@ int main(int argc, char **argv)
     atexit(done);
 
     parse_command_line(argc, argv);
+
+    ////////////////////////////////////////////////
+    /////////// CPU AND MEM USAGE //////////////////
+
+    pthread_t monitor_thread;
+    int pid = getpid();
+
+    // Create a thread to monitor CPU usage
+    pthread_create(&monitor_thread, NULL, get_cpu_usage, &pid);
+
+    //////////////////////////////////////////
+    /////////   MEM USAGE CALCULATE //////////
+
+    get_memory_usage(&mem_total, &mem_free_beg);
+
+    /////////////////////////////////////////
+
     if (in_file_path == NULL && isatty(fileno(stdin)))
     {
         err("no input specified, use \"unnaf -h\" for help\n");
@@ -452,5 +503,26 @@ int main(int argc, char **argv)
     else { close_output_file(); }
 
     success = true;
+
+
+    ////////////////////////////////////////////////
+    /////////// CPU AND MEM USAGE //////////////////
+    keep_running = false;
+
+    // Wait for the monitoring thread to finish
+    pthread_join(monitor_thread, NULL);
+
+
+    get_memory_usage(&mem_total, &mem_free_end);
+    if(mem_free_beg > mem_free_end)
+        mem_used = mem_free_beg - mem_free_end;
+    ram_total = (int)(mem_total/1000);
+    if(ram_avg == 0) ram_avg = 1;
+    fprintf(stdout,"Memory used: %d kb out of %d kb \n", mem_used, (int)mem_total);
+    fprintf(stdout,"CPU usage: %d %%\n", cpu_avg);
+    fprintf(stdout,"RAM usage: %d mb out of %d mb\n", ram_avg*ram_total/100, ram_total);
+
+    ////////////////////////////////////////////////
+    
     return 0;
 }
